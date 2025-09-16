@@ -10,10 +10,12 @@ from .models import Room, RoomType, Booking, Review
 from .forms import BookingForm, ReviewForm
 import datetime
 
+# Ensure this home view exists
 def home(request):
     room_types = RoomType.objects.all()
     return render(request, 'booking/home.html', {'room_types': room_types})
 
+# ... keep all your other views (room_list, book_room, etc.) ...
 def room_list(request):
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')

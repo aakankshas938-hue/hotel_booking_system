@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import RegisterView  # Only import what exists
+from .views import RegisterView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -14,7 +14,7 @@ urlpatterns = [
     path('booking/cancel/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
     path('review/<int:booking_id>/', views.add_review, name='add_review'),
     
-    # Authentication URLs - FIXED
+    # Authentication URLs
     path('login/', auth_views.LoginView.as_view(template_name='booking/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
