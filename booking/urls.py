@@ -14,6 +14,11 @@ urlpatterns = [
     path('booking/cancel/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
     path('review/<int:booking_id>/', views.add_review, name='add_review'),
     
+    # Room management
+    path('manage-rooms/', views.manage_rooms, name='manage_rooms'),
+    path('add-room/', views.add_room, name='add_room'),
+    path('add-room-type/', views.add_room_type, name='add_room_type'),
+    
     # Authentication URLs
     path('login/', auth_views.LoginView.as_view(template_name='booking/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),

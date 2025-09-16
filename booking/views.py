@@ -9,14 +9,11 @@ from django.urls import reverse_lazy
 from .models import Room, RoomType, Booking, Review
 from .forms import BookingForm, ReviewForm
 import datetime
-from django.shortcuts import render
-from .models import RoomType
 
 def home(request):
     room_types = RoomType.objects.all()
     return render(request, 'booking/home.html', {'room_types': room_types})
 
-# ... keep all your other views (room_list, book_room, etc.) ...
 def room_list(request):
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')
@@ -171,6 +168,75 @@ def add_review(request, booking_id):
 
     return render(request, 'booking/add_review.html', {'form': form, 'booking': booking})
 
+# Room management views (for superusers)
+@login_required
+def manage_rooms(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Access denied. Admin privileges required.")
+        return redirect('home')
+    
+    rooms = Room.objects.all()
+    room_types = RoomType.objects.all()
+    return render(request, 'booking/manage_rooms.html', {
+        'rooms': rooms,
+        'room_types': room_types
+    })
+
+@login_required
+def add_room(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Access denied. Admin privileges required.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        room_number = request.POST.get('room_number')
+        room_type_id = request.POST.get('room_type')
+        
+        if room_number and room_type_id:
+            room_type = get_object_or_404(RoomType, id=room_type_id)
+            room, created = Room.objects.get_or_create(
+                room_number=room_number,
+                defaults={'room_type': room_type, 'is_available': True}
+            )
+            if created:
+                messages.success(request, f"Room {room_number} added successfully!")
+            else:
+                messages.info(request, f"Room {room_number} already exists.")
+            return redirect('manage_rooms')
+    
+    room_types = RoomType.objects.all()
+    return render(request, 'booking/add_room.html', {'room_types': room_types})
+
+@login_required
+def add_room_type(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Access denied. Admin privileges required.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        price_per_night = request.POST.get('price_per_night')
+        capacity = request.POST.get('capacity')
+        
+        if name and price_per_night and capacity:
+            room_type, created = RoomType.objects.get_or_create(
+                name=name,
+                defaults={
+                    'description': description,
+                    'price_per_night': price_per_night,
+                    'capacity': capacity
+                }
+            )
+            if created:
+                messages.success(request, f"Room type '{name}' added successfully!")
+            else:
+                messages.info(request, f"Room type '{name}' already exists.")
+            return redirect('manage_rooms')
+    
+    return render(request, 'booking/add_room_type.html')
+
+# User registration
 class RegisterView(CreateView):
     form_class = UserCreationForm
     template_name = 'booking/register.html'
