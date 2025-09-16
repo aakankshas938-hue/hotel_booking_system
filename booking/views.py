@@ -9,8 +9,9 @@ from django.urls import reverse_lazy
 from .models import Room, RoomType, Booking, Review
 from .forms import BookingForm, ReviewForm
 import datetime
+from django.shortcuts import render
+from .models import RoomType
 
-# Ensure this home view exists
 def home(request):
     room_types = RoomType.objects.all()
     return render(request, 'booking/home.html', {'room_types': room_types})
