@@ -1,0 +1,67 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Available Rooms</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Search Rooms</h5>
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="check_in" class="form-label">Check-in Date</label>
+                    <input type="date" class="form-control" id="check_in" name="check_in" value="{{ check_in }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="check_out" class="form-label">Check-out Date</label>
+                    <input type="date" class="form-control" id="check_out" name="check_out" value="{{ check_out }}" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="guests" class="form-label">Guests</label>
+                    <input type="number" class="form-control" id="guests" name="guests" value="{{ guests }}" min="1" max="10" required>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Search Availability</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if rooms %}
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-6 mb-4">
+            <div class="card room-card h-100">
+                {% if room.room_type.image %}
+                <img src="{{ room.room_type.image.url }}" class="card-img-top" alt="{{ room.room_type.name }}" style="height: 250px; object-fit: cover;">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" class="card-img-top" alt="{{ room.room_type.name }}" style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">Room {{ room.room_number }} - {{ room.room_type.name }}</h5>
+                    <p class="card-text">{{ room.room_type.description }}</p>
+                    <p class="card-text"><strong>Capacity:</strong> {{ room.room_type.capacity }} guests</p>
+                    <p class="card-text"><strong>Price:</strong> ${{ room.room_type.price_per_night }}/night</p>
+                </div>
+                <div class="card-footer">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'book_room' room.id %}?check_in={{ check_in }}&check_out={{ check_out }}&guests={{ guests }}" class="btn btn-primary">Book Now</a>
+                    {% else %}
+                        <a href="{% url 'admin:login' %}?next={% url 'book_room' room.id %}?check_in={{ check_in }}&check_out={{ check_out }}&guests={{ guests }}" class="btn btn-primary">Login to Book</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        {% if check_in and check_out %}
+            No rooms available for the selected dates. Please try different dates.
+        {% else %}
+            Please select check-in and check-out dates to see available rooms.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

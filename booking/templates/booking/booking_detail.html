@@ -1,0 +1,70 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Booking Details #{{ booking.id }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Room:</strong> {{ booking.room.room_number }} - {{ booking.room.room_type.name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong> 
+                            <span class="badge 
+                                {% if booking.status == 'confirmed' %}bg-success
+                                {% elif booking.status == 'pending' %}bg-warning
+                                {% elif booking.status == 'cancelled' %}bg-danger
+                                {% else %}bg-info{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Check-in:</strong> {{ booking.check_in_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Check-out:</strong> {{ booking.check_out_date }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Guests:</strong> {{ booking.guests }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total Price:</strong> ${{ booking.total_price }}
+                        </div>
+                    </div>
+                    
+                    {% if booking.special_requests %}
+                    <div class="mb-3">
+                        <strong>Special Requests:</strong>
+                        <p>{{ booking.special_requests }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <strong>Booking Date:</strong> {{ booking.created_at }}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{% url 'my_bookings' %}" class="btn btn-secondary">Back to My Bookings</a>
+                        {% if booking.status in 'pending confirmed' %}
+                            <a href="{% url 'update_booking' booking.id %}" class="btn btn-primary">Update Booking</a>
+                            <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger">Cancel Booking</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

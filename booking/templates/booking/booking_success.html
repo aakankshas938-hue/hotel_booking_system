@@ -1,0 +1,37 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3>Booking Confirmed!</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h4>Thank you for your booking!</h4>
+                        <p>Your booking has been received and is being processed.</p>
+                    </div>
+                    
+                    <h5>Booking Details</h5>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item"><strong>Booking ID:</strong> #{{ booking.id }}</li>
+                        <li class="list-group-item"><strong>Room:</strong> {{ booking.room.room_number }} - {{ booking.room.room_type.name }}</li>
+                        <li class="list-group-item"><strong>Check-in:</strong> {{ booking.check_in_date }}</li>
+                        <li class="list-group-item"><strong>Check-out:</strong> {{ booking.check_out_date }}</li>
+                        <li class="list-group-item"><strong>Guests:</strong> {{ booking.guests }}</li>
+                        <li class="list-group-item"><strong>Total Price:</strong> ${{ booking.total_price }}</li>
+                        <li class="list-group-item"><strong>Status:</strong> <span class="badge bg-info">{{ booking.get_status_display }}</span></li>
+                    </ul>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'my_bookings' %}" class="btn btn-primary">View My Bookings</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2>My Bookings</h2>
+
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Guests</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.room.room_number }} - {{ booking.room.room_type.name }}</td>
+                    <td>{{ booking.check_in_date }}</td>
+                    <td>{{ booking.check_out_date }}</td>
+                    <td>{{ booking.guests }}</td>
+                    <td>${{ booking.total_price }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if booking.status == 'confirmed' %}bg-success
+                            {% elif booking.status == 'pending' %}bg-warning
+                            {% elif booking.status == 'cancelled' %}bg-danger
+                            {% else %}bg-info{% endif %}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-info">View</a>
+                        {% if booking.status in 'pending confirmed' %}
+                            <a href="{% url 'update_booking' booking.id %}" class="btn btn-sm btn-primary">Update</a>
+                            <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-sm btn-danger">Cancel</a>
+                        {% endif %}
+                        {% if booking.status == 'completed' and not booking.review %}
+                            <a href="{% url 'add_review' booking.id %}" class="btn btn-sm btn-outline-primary">Review</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any bookings yet. <a href="{% url 'room_list' %}" class="alert-link">Book a room now!</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

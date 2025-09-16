@@ -1,0 +1,111 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Book Room: {{ room.room_number }} - {{ room.room_type.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.check_in_date.id_for_label }}" class="form-label">Check-in Date</label>
+                                {{ form.check_in_date }}
+                                {% if form.check_in_date.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.check_in_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.check_out_date.id_for_label }}" class="form-label">Check-out Date</label>
+                                {{ form.check_out_date }}
+                                {% if form.check_out_date.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.check_out_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.guests.id_for_label }}" class="form-label">Number of Guests</label>
+                            {{ form.guests }}
+                            {% if form.guests.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.guests.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                            {{ form.special_requests }}
+                            {% if form.special_requests.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.special_requests.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5>Price Calculation</h5>
+                            <p id="price-calculation">Select dates to see price</p>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Calculate price based on selected dates
+    function calculatePrice() {
+        const checkIn = new Date(document.getElementById('id_check_in_date').value);
+        const checkOut = new Date(document.getElementById('id_check_out_date').value);
+        const pricePerNight = {{ room.room_type.price_per_night }};
+        
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            const totalPrice = nights * pricePerNight;
+            document.getElementById('price-calculation').innerHTML = 
+                `${nights} night(s) × $${pricePerNight} = <strong>$${totalPrice.toFixed(2)}</strong>`;
+        } else {
+            document.getElementById('price-calculation').innerHTML = 'Select dates to see price';
+        }
+    }
+    
+    document.getElementById('id_check_in_date').addEventListener('change', calculatePrice);
+    document.getElementById('id_check_out_date').addEventListener('change', calculatePrice);
+    
+    // Initialize price calculation if dates are pre-filled
+    window.addEventListener('load', calculatePrice);
+</script>
+{% endblock %}
