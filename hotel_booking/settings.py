@@ -9,9 +9,9 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production'
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
-
-# Remove 'django.contrib.admin' from INSTALLED_APPS
+# Application definition - ADD BACK django.contrib.admin
 INSTALLED_APPS = [
+    'django.contrib.admin',  # ⚠️ THIS LINE MUST BE ADDED
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
